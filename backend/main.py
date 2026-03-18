@@ -77,7 +77,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: int = payload.get("sub")
+        user_id = int(payload.get("sub"))
         if user_id is None:
             raise credentials_exception
     except JWTError:
@@ -153,7 +153,7 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
-    token = create_access_token({"sub": user.id})
+    token = create_access_token({"sub": str(user.id)})
     return {"access_token": token, "token_type": "bearer", "user": user}
 
 @app.post("/auth/login", response_model=Token)
