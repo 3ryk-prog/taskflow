@@ -67,32 +67,36 @@ function AuthPage() {
   const { login } = useAuth();
 
   const handle = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      let res;
-      if (mode === "register") {
-        res = await fetch(`${API}/auth/register`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        const fd = new URLSearchParams();
-        fd.append("username", form.username);
-        fd.append("password", form.password);
-        res = await fetch(`${API}/auth/login`, { method: "POST", body: fd });
-      }
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Błąd");
-      login(data.access_token, data.user);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setLoading(true);
+  setError("");
+  try {
+    let res;
+    if (mode === "register") {
+      res = await fetch(`${API}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } else {
+      const fd = new URLSearchParams();
+      fd.append("username", form.username);
+      fd.append("password", form.password);
+      res = await fetch(`${API}/auth/login`, {
+        method: "POST",
+        body: fd,
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      });
     }
-  };
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.detail || "Błąd");
+    login(data.access_token, data.user);
+  } catch (err) {
+    setError(err.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="auth-wrap">
@@ -109,13 +113,13 @@ function AuthPage() {
           {mode === "register" && (
             <div className="field">
               <label>Email</label>
-              <input type="email" placeholder="jan@example.com" value={form.email}
+              <input type="email" placeholder="eryk@example.com" value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })} required />
             </div>
           )}
           <div className="field">
             <label>Nazwa użytkownika</label>
-            <input type="text" placeholder="jankowalski" value={form.username}
+            <input type="text" placeholder="eryknowak" value={form.username}
               onChange={e => setForm({ ...form, username: e.target.value })} required />
           </div>
           <div className="field">
